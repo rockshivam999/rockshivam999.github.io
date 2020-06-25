@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" style="scroll-behavior: smooth;">
 
 <head>
     <link rel="stylesheet" href="./resources/css/style.css">
@@ -17,8 +17,8 @@
     <title>Hi there</title>
 </head>
 
-<body class="bg-dark">
-    <nav class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark">
+<body class="bg-dark" data-spy="scroll">
+    <nav class="navbar border  rounded fixed-top navbar-expand-lg navbar-dark bg-dark">
         <a class="navbar-brand" href="#">Hi There , I am Prem</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -26,9 +26,9 @@
         </button>
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item active">
-                    <a class="nav-link" href="#Home">Home <span class="sr-only">(current)</span></a>
+            <ul class=" navbar-nav mr-auto " >
+                <li class="nav-item ">
+                    <a class="nav-link " href="#carouselExampleIndicators">Home</a>
                 </li>
 
                 <li class="nav-item">
@@ -65,15 +65,27 @@
           <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
           <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
         </ol>
-        <div class="carousel-inner">
+        <div class="carousel-inner" style="background-color: rgba(0, 0, 0, 0.253);">
           <div class="carousel-item active">
             <img  class="blur d-block w-100 "  src="./resources/assets/img/slide1.jfif" alt="First slide">
+            <div class="carousel-caption thin d-none d-md-block " style="margin-bottom: 20%;">
+                <h1 class="large-txt" >What i do</h1>
+                <h3>⚡ CRAZY FULL STACK DEVELOPER WHO WANTS TO EXPLORE EVERY TECH STACK</h3>
+              </div>
           </div>
           <div class="carousel-item">
-            <img class="d-block w-100" src="./resources/assets/img/slide2.jfif" alt="Second slide">
+            <img class=" blur d-block w-100" src="./resources/assets/img/slide2.jfif" alt="Second slide">
+            <div class="carousel-caption thin d-none d-md-block" style="margin-bottom: 20%;">
+                <h1 class="large-txt">What i do</h1>
+                <h3>⚡ Develop interactive Front end / User Interfaces for your web and mobile applications</h3>
+              </div>
           </div>
           <div class="carousel-item">
-            <img class="d-block w-100" src="./resources/assets/img/slide3.jfif" alt="Third slide">
+            <img class=" blur d-block w-100" src="./resources/assets/img/slide3.jfif" alt="Third slide">
+            <div class="carousel-caption thin d-none d-md-block" style="margin-bottom: 20%;">
+                <h1 class="large-txt ">What i do</h1>
+                <h3>⚡ Develop highly interactive Front end / User Interfaces for your web and mobile applications</h3>
+              </div>
           </div>
         </div>
         <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
