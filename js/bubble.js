@@ -1,8 +1,8 @@
 const board = document.getElementById("board1");
+board.width=800;
 const ctxofbubble = board.getContext("2d");
 // board.width = window.innerWidth - 50;
 // board.height = window.innerHeight - 50;
-
 // ctx.moveTo(0,0);
 // ctx.lineTo(200,200);
 // ctx.stroke();
