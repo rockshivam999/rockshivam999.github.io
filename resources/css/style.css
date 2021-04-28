@@ -14,3 +14,7 @@
 .large-txt{
     font-size: 700%;
 }
+.canvas{
+    border: solid 1px blue;  
+    width: 100%;
+  }

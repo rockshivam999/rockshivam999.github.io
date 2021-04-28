@@ -58,7 +58,7 @@
 
 
 
-    <!-- ------------- -->
+    <!-- carosel ------------- -->
     <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
         <ol class="carousel-indicators">
           <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
@@ -167,11 +167,51 @@
         </div>
     </div>
 
-	 <div id="root">
-        <canvas id="board"></canvas>
+ <!-- Projects  -->
+ <div class="jumbotron bg-dark " id="about" style="color: floralwhite; margin-bottom: 0%;">
+    <div class="row">
+        <canvas id="board1" class="canvas"></canvas>
+        <div class="col-md-12 ">
+            <h2 class="text-center border rounded" onclick="callsorting('bubble');"><strong>Bubble sort(Click Here)</strong></h2>
+        </div>
     </div>
-    <script src="js/bubble.js"></script>
-    <button onclick="bubblesort(arr);"> sort </button>
+</div>
+
+
+<script src="js/bubble.js"></script>
+
+<!-- <script>
+    $(document).ready(function() {
+  var canvas = document.getElementsByTagName(canvas);
+  canvas.width = $("#parent").width();
+  canvas.height = $("#parent").height();
+});
+</script> -->
+
+<!-- <script>
+    function resize(){    
+      $("#canvas").outerHeight($(window).height()-$("#canvas").offset().top- Math.abs($("#canvas").outerHeight(true) - $("#canvas").outerHeight()));
+    }
+    $(document).ready(function(){
+      resize();
+      $(window).on("resize", function(){                      
+          resize();
+      });
+    });
+    </script> -->
+
+    <script>
+        $(document).ready(function(){
+         $(".canvas").outerHeight($(window).height()-$(".canvas").offset().top-Math.abs( $(".canvas").outerHeight(true) - $(".canvas").outerHeight()));
+         $("#h-input").val($(".canvas").outerHeight());
+         $("#w-input").val($(".canvas").outerWidth());
+         $("#set-size").click(function(){
+             $(".canvas").outerHeight($("#h-input").val());
+           $("#main-content").width($("#w-input").val());
+           $(".canvas").outerWidth($("#main-content").width());
+         });
+        });
+       </script>
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
