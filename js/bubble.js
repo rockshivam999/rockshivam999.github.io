@@ -1,5 +1,11 @@
-const board = document.getElementById("board1");
+
+const board = document.getElementById("bubblecanvas");
+const quickboard = document.getElementById("quickcanvas");
+const ctxofquick=quickboard.getContext("2d");
 board.width=800;
+board.height=200;
+quickboard.width=800;
+quickboard.height=200;
 const ctxofbubble = board.getContext("2d");
 // board.width = window.innerWidth - 50;
 // board.height = window.innerHeight - 50;
@@ -67,7 +73,7 @@ function bubblesort(arr,ctxofbubble) {
 
 // bubblesort(arr);
 var k = 1;
-function quicksort(arr, l, r) {
+function quicksort(arr, l, r,ctxofquick) {
     console.log(k + " " + l + " " + r);
     if (r <= l) {
         return;
@@ -87,13 +93,13 @@ function quicksort(arr, l, r) {
             }
             k++;
             var arrt = arr.slice(0);
-            delaycallback(k * 10, arrt);
+            delaycallback(k * 10, arrt,ctxofquick);
         }
         t = arr[curr];
         arr[curr] = arr[r];
         arr[r] = t;
-        quicksort(arr, l, curr - 1);
-        quicksort(arr, curr + 1, r);
+        quicksort(arr, l, curr - 1,ctxofquick);
+        quicksort(arr, curr + 1, r,ctxofquick);
     }
 
 }
@@ -122,9 +128,11 @@ function shuffle(array) {
 function callsorting(algo) {
     arr = shuffle(arr);
     if (algo == "bubble") {
-        bubblesort(arr,ctxofbubble);
+        var arrt = arr.slice(0);
+        bubblesort(arrt,ctxofbubble);
     } else if (algo == "quick") {
-        quicksort(arr, 0, arr.length - 1);
+        var arrt = arr.slice(0);
+        quicksort(arrt, 0, arr.length - 1,ctxofquick);
     }
 }
 // var canvases=document.getElementsByTagName(canvas);
