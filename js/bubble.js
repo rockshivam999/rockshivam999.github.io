@@ -48,6 +48,7 @@ function sleep(ms) {
 }
 
 function delaycallback(delaytime, arrt,ctxofbubble) {
+    console.log(delaytime);
     sleep(delaytime)
         .then(() => { draw(ctxofbubble,arrt) });
 }
@@ -63,6 +64,7 @@ function bubblesort(arr,ctxofbubble) {
 
             }
             k++
+            
             var arrt = arr.slice(0);
             delaycallback(k * 10, arrt,ctxofbubble);
 
@@ -92,6 +94,7 @@ function quicksort(arr, l, r,ctxofquick) {
                 curr++;
             }
             k++;
+           
             var arrt = arr.slice(0);
             delaycallback(k * 10, arrt,ctxofquick);
         }
@@ -128,11 +131,23 @@ function shuffle(array) {
 function callsorting(algo) {
     arr = shuffle(arr);
     if (algo == "bubble") {
+        var dis=document.getElementById("bubledisable");
+        var t=dis.onclick;
+        dis.onclick = null;
         var arrt = arr.slice(0);
         bubblesort(arrt,ctxofbubble);
+        sleep(720*10+7)
+        .then(() => { dis.onclick = t; });
+        
     } else if (algo == "quick") {
+        var dis=document.getElementById("disablequick");
+        var t=dis.onclick;
+        dis.onclick = null;
+        k=1;
         var arrt = arr.slice(0);
         quicksort(arrt, 0, arr.length - 1,ctxofquick);
+        sleep(720*10+7)
+        .then(() => { dis.onclick = t; });
     }
 }
 // var canvases=document.getElementsByTagName(canvas);
