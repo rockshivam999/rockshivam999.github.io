@@ -1,0 +1,6 @@
+.grid {
+    margin: auto;
+    aspect-ratio: 1/1;
+    max-height: 80vh;
+    align-self: auto;
+  }
