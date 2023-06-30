@@ -1,145 +1,344 @@
 import React, { useEffect, useState } from "react";
 import Grid from "../grid/Grid";
+import { async } from "q";
 
-const GraphVisulizer = ({ size }) => {
+const GraphVisulizer = ({ n }) => {
     // const [grid, setGrid] = useState();
-    let grid = Array(size);
-    for (let i = 0; i < size; i++) {
-        grid[i] = new Array(size);
-        for (let j = 0; j < size; j++) {
+    let grid = Array(n);
+    let initialCellState = {
+        color: "#FFFEC4",
+        isSrc: false,
+        isDest: false,
+        isWall: false
+    };
+    for (let i = 0; i < n; i++) {
+        grid[i] = new Array(n);
+        for (let j = 0; j < n; j++) {
             grid[i][j] = {
-                color: "red",
-                isSrc: false,
-                isDest: false,
+                ...initialCellState
             };
         }
     }
-    const [gridhook, setGridHook] = useState(grid)
-    useEffect(() => { setGridHook(grid) }, [grid])
 
-    let gridjsx = <Grid prepGrid={gridhook} />
-    // console.log(gridref);
+    const [gridhook, setGridHook] = useState(grid)
+    const updateCell = (i, j, property, value) => {
+        // console.log("in update cell")
+        // console.log(i, j, property, value)
+        const newGrid = [...gridhook];
+        // newGrid[i][j] = { ...newGrid[i][j], ...newValues };
+        if (property == 'reset') {
+            for (let i = 0; i < newGrid.length; i++) {
+                for (let j = 0; j < newGrid[i].length; j++) {
+                    // if (newGrid[i][j].isSrc) {
+                    newGrid[i][j] = { ...initialCellState };
+                    // }
+                    // newGrid[i][j] = { ...initialCellState };
+                }
+            }
+        }
+        else if (property == 'color') {
+            newGrid[i][j].color = value
+        } else if (property == 'isWall') {
+            newGrid[i][j].isWall = true;
+            newGrid[i][j].color = 'black'
+            newGrid[i][j].isDest = false;
+            newGrid[i][j].isSrc = false;
+        } else if (property == 'isSrc') {
+            for (let i = 0; i < newGrid.length; i++) {
+                for (let j = 0; j < newGrid[i].length; j++) {
+                    if (newGrid[i][j].isSrc) {
+                        newGrid[i][j] = { ...initialCellState };
+                    }
+                    // newGrid[i][j] = { ...initialCellState };
+                }
+            }
+            newGrid[i][j].isSrc = true;
+            newGrid[i][j].color = 'green';
+        } else if (property == 'isDest') {
+            for (let i = 0; i < newGrid.length; i++) {
+                for (let j = 0; j < newGrid[i].length; j++) {
+                    if (newGrid[i][j].isDest) {
+                        newGrid[i][j] = { ...initialCellState };
+                    }
+                    // newGrid[i][j] = { ...initialCellState }
+                }
+            }
+            newGrid[i][j].isDest = true;
+            newGrid[i][j].color = 'red';
+        } else {
+            console.log(property + " not found")
+        }
+        setGridHook(newGrid);
+    }
+
+    let gridjsx = <Grid prepGrid={gridhook} updateCell={updateCell} />
+
 
 
     return (<div>
         {gridjsx}
-        {/* <button onClick={() => showPath(gridref)}> click me</button> */}
-        {/* {grid[0] ? gridjsx : <>Rendering....</>} */}
+        <button onClick={() => updateCell(0, 0, "reset")}>reset grid</button>
+        <button onClick={() => { callGraphAlgo('bfs', gridhook, n, updateCell, 10, false) }}> bfs</button>
+        <button onClick={() => { callGraphAlgo('dfs', gridhook, n, updateCell, 10, false) }}> dfs</button>
+        <button onClick={() => { callGraphAlgo('bidirectionalBfs', gridhook, n, updateCell, 10, false) }}> bidirection bfs</button>
+
     </div>)
 }
-function showPath(gridref) {
-    let grid = gridref[0];
-    grid[0][0].setSrc(true);
-    grid[0][0].setColor('green');
-    grid[45][39].setDest(true);
+const callGraphAlgo = (algo, gridhook, n, updateCell, speed, allowDiagonals) => {
+    if (algo == 'bfs') {
+        bfs(gridhook, n, updateCell, speed, allowDiagonals);
+    } else if (algo == 'dfs') {
+        dfs(gridhook, n, updateCell, speed, allowDiagonals);
 
-    grid[45][39].setColor('red');
-    console.log(gridref);
-    console.log(grid);
-    const startNode = [0, 0]; // Starting node coordinates
-    const visited = createVisitedArray(grid.length, grid[0].length);
-    console.log("before")
+    } else if (algo == 'bidirectionalBfs') {
+        bidirectionalBfs(gridhook, n, updateCell, speed, allowDiagonals);
 
-    console.log(grid[45][39].isDest())
-    console.log(grid[45][39])
-    // return;
-    const handleClick = () => {
-        // Function to be executed after 1 second delay
-        const delayedFunction = () => {
-            // Call your function here
-            dfs(startNode, grid, visited);
-        };
+    }
+};
+const bidirectionalBfs = async (grid, size, updateCell, delay, allowDiagonals) => {
+    let directionVectors = [
+        [-1, 0],  // Up
+        [0, 1],   // Right
+        [1, 0],   // Down
+        [0, -1],  // Left
+    ];
+    const diagonals = [[-1, 1], [1, 1], [1, -1], [-1, -1]]
+    if (allowDiagonals) {
+        directionVectors = [...directionVectors, ...diagonals]
+    }
+    let source = null;
+    let destination = null;
 
-        // Delay execution of the function for 1 second
-        setTimeout(delayedFunction, 1000);
-    };
-    handleClick();
-    console.log("after")
-    console.log(grid[45][39].isDest())
-    // Display the grid with the path
-    // for (let i = 0; i < grid.length; i++) {
-    //     for (let j = 0; j < grid[i].length; j++) {
-    //         console.log(grid[i][j]);
-    //     }
-    // }
-}
+    // Find source and destination cells
+    for (let i = 0; i < size; i++) {
+        for (let j = 0; j < size; j++) {
+            if (grid[i][j].isSrc) source = [i, j];
+            if (grid[i][j].isDest) destination = [i, j];
+        }
+    }
 
-function dfs(node, grid, visited) {
-    const stack = [];
-    let c = 0;
-    // Push the starting node to the stack
-    stack.push(node);
+    // If source or destination are not found, stop
+    if (!source || !destination) {
+        console.error('Source or destination not found');
+        return;
+    }
+
+    let visitedFromSource = Array(size).fill(null).map(() => Array(size).fill(false));
+    let cameFromSource = Array(size).fill(null).map(() => Array(size).fill(null));
+
+    let visitedFromDest = Array(size).fill(null).map(() => Array(size).fill(false));
+    let cameFromDest = Array(size).fill(null).map(() => Array(size).fill(null));
+
+    let queueFromSource = [source];
+    visitedFromSource[source[0]][source[1]] = true;
+
+    let queueFromDest = [destination];
+    visitedFromDest[destination[0]][destination[1]] = true;
+
+    let meetPoint = null;
+
+    while (queueFromSource.length > 0 && queueFromDest.length > 0) {
+        let [i, j] = queueFromSource.shift();
+        if (!grid[i][j].isSrc && !grid[i][j].isDest) {
+            updateCell(i, j, "color", "lightgreen");  // Mark as visited from source
+            await new Promise(resolve => setTimeout(resolve, delay));
+        }
+
+        let [x, y] = queueFromDest.shift();
+        if (!grid[x][y].isSrc && !grid[x][y].isDest) {
+            updateCell(x, y, "color", "lightblue");  // Mark as visited from dest
+            await new Promise(resolve => setTimeout(resolve, delay));
+        }
+
+        for (let direction of directionVectors) {
+            let ni = i + direction[0];
+            let nj = j + direction[1];
+            if (ni >= 0 && nj >= 0 && ni < size && nj < size && !visitedFromSource[ni][nj] && !grid[ni][nj].isWall) {
+                queueFromSource.push([ni, nj]);  // Enqueue
+                visitedFromSource[ni][nj] = true;
+                cameFromSource[ni][nj] = [i, j];
+
+                if (visitedFromDest[ni][nj]) {
+                    meetPoint = [ni, nj];
+                    break;
+                }
+            }
+        }
+
+        for (let direction of directionVectors) {
+            let nx = x + direction[0];
+            let ny = y + direction[1];
+            if (nx >= 0 && ny >= 0 && nx < size && ny < size && !visitedFromDest[nx][ny] && !grid[nx][ny].isWall) {
+                queueFromDest.push([nx, ny]);  // Enqueue
+                visitedFromDest[nx][ny] = true;
+                cameFromDest[nx][ny] = [x, y];
+
+                if (visitedFromSource[nx][ny]) {
+                    meetPoint = [nx, ny];
+                    break;
+                }
+            }
+        }
+
+        if (meetPoint !== null) {
+            break;
+        }
+    }
+
+    // Draw the path from source to meetPoint
+    let [i, j] = meetPoint;
+    while ((i !== source[0] || j !== source[1]) && cameFromSource[i][j]) {
+        if (!grid[i][j].isSrc && !grid[i][j].isDest) {
+            updateCell(i, j, "color", "blue");  // Mark as part of the path
+            await new Promise(resolve => setTimeout(resolve, delay));
+        }
+        [i, j] = cameFromSource[i][j];
+    }
+
+    // Draw the path from meetPoint to destination
+    let [x, y] = meetPoint;
+    while ((x !== destination[0] || y !== destination[1]) && cameFromDest[x][y]) {
+        if (!grid[x][y].isSrc && !grid[x][y].isDest) {
+            updateCell(x, y, "color", "blue");  // Mark as part of the path
+            await new Promise(resolve => setTimeout(resolve, delay));
+        }
+        [x, y] = cameFromDest[x][y];
+    }
+};
+
+const dfs = async (grid, size, updateCell, delay, allowDiagonals) => {
+    let directionVectors = [
+        [-1, 0],  // Up
+        [0, 1],   // Right
+        [1, 0],   // Down
+        [0, -1],  // Left
+    ];
+    const diagonals = [[-1, 1], [1, 1], [1, -1], [-1, -1]]
+    if (allowDiagonals) {
+        directionVectors = [...directionVectors, ...diagonals]
+    }
+    let source = null;
+    let destination = null;
+
+    // Find source and destination cells
+    for (let i = 0; i < size; i++) {
+        for (let j = 0; j < size; j++) {
+            if (grid[i][j].isSrc) source = [i, j];
+            if (grid[i][j].isDest) destination = [i, j];
+        }
+    }
+
+    // If source or destination are not found, stop
+    if (!source || !destination) {
+        console.error('Source or destination not found');
+        return;
+    }
+
+    let visited = Array(size).fill(null).map(() => Array(size).fill(false));
+    let cameFrom = Array(size).fill(null).map(() => Array(size).fill(null));
+
+    let stack = [source];
+    visited[source[0]][source[1]] = true;
 
     while (stack.length > 0) {
-        const current = stack.pop();
-        const [row, col] = current;
-        const currentNode = grid[row][col];
+        let [i, j] = stack.pop();  // Pop from stack
+        if (!grid[i][j].isSrc && !grid[i][j].isDest) {
+            updateCell(i, j, "color", "lightgreen");  // Mark as visited
+            await new Promise(resolve => setTimeout(resolve, delay));
+        }
 
-        if (!visited[row][col]) {
-            visited[row][col] = true;
+        if (i === destination[0] && j === destination[1]) {
+            break;  // Found the destination
+        }
 
-            // Update the color of the current node to pink
-            if (!currentNode.isSrc() && !currentNode.isDest()) {
-                // Update the color of the current node to pink
-                currentNode.setColor('pink');
-            }
-            // c += 1
-            // console.log(c)
-
-            // Check if the current node is the destination node
-            if (currentNode.isDest()) {
-                console.log("found dest")
-                break; // Stop traversal if the destination is found
-
-            }
-
-            // Check adjacent nodes
-            const neighbors = getNeighbors(current, grid);
-            for (const neighbor of neighbors) {
-                stack.push(neighbor);
+        for (let direction of directionVectors) {
+            let ni = i + direction[0];
+            let nj = j + direction[1];
+            if (ni >= 0 && nj >= 0 && ni < size && nj < size && !visited[ni][nj] && !grid[ni][nj].isWall) {
+                stack.push([ni, nj]);  // Push to stack
+                visited[ni][nj] = true;
+                cameFrom[ni][nj] = [i, j];
             }
         }
     }
-}
 
-function getNeighbors(node, grid) {
-    const directions = [
-        [1, 0], // down
-        [-1, 0], // up
-        [0, 1], // right
-        [0, -1] // left
+    // Draw the path
+    let [i, j] = destination;
+    while ((i !== source[0] || j !== source[1]) && cameFrom[i][j]) {
+        if (!grid[i][j].isSrc && !grid[i][j].isDest) {
+            updateCell(i, j, "color", "blue");  // Mark as part of the path
+            await new Promise(resolve => setTimeout(resolve, delay * 2));
+        }
+        [i, j] = cameFrom[i][j];
+    }
+};
+
+const bfs = async (grid, size, updateCell, delay, allowDiagonals) => {
+    let directionVectors = [
+        [-1, 0],  // Up
+        [0, 1],   // Right
+        [1, 0],   // Down
+        [0, -1],  // Left
     ];
+    const diagonals = [[-1, 1], [1, 1], [1, -1], [-1, -1]]
+    if (allowDiagonals) {
+        directionVectors = [...directionVectors, ...diagonals]
+    }
+    let source = null;
+    let destination = null;
 
-    const neighbors = [];
+    // Find source and destination cells
+    for (let i = 0; i < size; i++) {
+        for (let j = 0; j < size; j++) {
+            if (grid[i][j].isSrc) source = [i, j];
+            if (grid[i][j].isDest) destination = [i, j];
+        }
+    }
 
-    const [row, col] = node;
-    const numRows = grid.length;
-    const numCols = grid[0].length;
+    // If source or destination are not found, stop
+    if (!source || !destination) {
+        console.error('Source or destination not found');
+        return;
+    }
 
-    for (const direction of directions) {
-        const newRow = row + direction[0];
-        const newCol = col + direction[1];
+    let visited = Array(size).fill(null).map(() => Array(size).fill(false));
+    let cameFrom = Array(size).fill(null).map(() => Array(size).fill(null));
 
-        // Check if the new coordinates are within the grid boundaries
-        if (newRow >= 0 && newRow < numRows && newCol >= 0 && newCol < numCols) {
-            const neighbor = grid[newRow][newCol];
+    let queue = [source];
+    visited[source[0]][source[1]] = true;
 
-            // Add the neighbor if it is not the source or destination
-            if (!neighbor.isSrc() && !neighbor.isDest()) {
-                neighbors.push([newRow, newCol]);
+    while (queue.length > 0) {
+        let [i, j] = queue.shift();  // Dequeue
+        if (!grid[i][j].isSrc && !grid[i][j].isDest) {
+            updateCell(i, j, "color", "lightgreen");  // Mark as visited
+            await new Promise(resolve => setTimeout(resolve, delay));
+        }
+
+        if (i === destination[0] && j === destination[1]) {
+            break;  // Found the destination
+        }
+
+        for (let direction of directionVectors) {
+            let ni = i + direction[0];
+            let nj = j + direction[1];
+            if (ni >= 0 && nj >= 0 && ni < size && nj < size && !visited[ni][nj] && !grid[ni][nj].isWall) {
+                queue.push([ni, nj]);  // Enqueue
+                visited[ni][nj] = true;
+                cameFrom[ni][nj] = [i, j];
             }
         }
     }
 
-    return neighbors;
-}
-
-function createVisitedArray(rows, cols) {
-    const visited = [];
-    for (let i = 0; i < rows; i++) {
-        visited.push(new Array(cols).fill(false));
+    // Draw the path
+    let [i, j] = destination;
+    while ((i !== source[0] || j !== source[1]) && cameFrom[i][j]) {
+        if (!grid[i][j].isSrc && !grid[i][j].isDest) {
+            updateCell(i, j, "color", "blue");  // Mark as part of the path
+            await new Promise(resolve => setTimeout(resolve, delay * 2));
+        }
+        [i, j] = cameFrom[i][j];
     }
-    return visited;
-}
+};
+
 
 export default GraphVisulizer;
