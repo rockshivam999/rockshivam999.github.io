@@ -186,6 +186,9 @@ const bidirectionalBfs = async (grid, size, updateCell, delay, allowDiagonals) =
     }
 
     // Draw the path from source to meetPoint
+    if (!meetPoint) {
+        return;
+    }
     let [i, j] = meetPoint;
     while ((i !== source[0] || j !== source[1]) && cameFromSource[i][j]) {
         if (!grid[i][j].isSrc && !grid[i][j].isDest) {
@@ -275,10 +278,12 @@ const dfs = async (grid, size, updateCell, delay, allowDiagonals) => {
 
 const bfs = async (grid, size, updateCell, delay, allowDiagonals) => {
     let directionVectors = [
-        [-1, 0],  // Up
         [0, 1],   // Right
-        [1, 0],   // Down
+        [-1, 0],  // Up
         [0, -1],  // Left
+        [1, 0],   // Down
+
+
     ];
     const diagonals = [[-1, 1], [1, 1], [1, -1], [-1, -1]]
     if (allowDiagonals) {
